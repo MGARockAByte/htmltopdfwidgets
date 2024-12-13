@@ -6,7 +6,11 @@ void main() {
   createDocument();
 }
 
-const htmlText = '''<h1>AppFlowyEditor</h1>
+const htmlText =
+    '<h2>👋 <strong>Welcome to</strong> <strong><em><a href="appflowy.io">AppFlowy Editor</a></em></strong></h2>';
+
+const htmlText2 = '''
+<h1>AppFlowyEditor</h1>
 <h2>👋 <strong>Welcome to</strong> <strong><em><a href="appflowy.io">AppFlowy Editor</a></em></strong></h2>
   <p>AppFlowy Editor is a <strong>highly customizable</strong> <em>rich-text editor</em></p>
 <hr />
@@ -80,27 +84,27 @@ for the formatted Markdown view in the demo.
 """;
 createDocument() async {
   const filePath = 'html_example.pdf';
-  const markDownfilePath = 'markdown_example.pdf';
+  // const markDownfilePath = 'markdown_example.pdf';
   final file = File(filePath);
-  final markdownfile = File(markDownfilePath);
+  // final markdownfile = File(markDownfilePath);
   final newpdf = Document();
-  final markdownNewpdf = Document();
+  // final markdownNewpdf = Document();
   final List<Widget> widgets = await HTMLToPdf().convert(
     htmlText,
   );
-  final List<Widget> markdownwidgets = await HTMLToPdf().convertMarkdown(
-    markDown,
-  );
+  // final List<Widget> markdownwidgets = await HTMLToPdf().convertMarkdown(
+  //   markDown,
+  // );
   newpdf.addPage(MultiPage(
       maxPages: 200,
       build: (context) {
         return widgets;
       }));
-  markdownNewpdf.addPage(MultiPage(
-      maxPages: 200,
-      build: (context) {
-        return markdownwidgets;
-      }));
+  // markdownNewpdf.addPage(MultiPage(
+  //     maxPages: 200,
+  //     build: (context) {
+  //       return markdownwidgets;
+  //     }));
   await file.writeAsBytes(await newpdf.save());
-  await markdownfile.writeAsBytes(await markdownNewpdf.save());
+  // await markdownfile.writeAsBytes(await markdownNewpdf.save());
 }

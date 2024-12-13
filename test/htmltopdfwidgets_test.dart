@@ -27,6 +27,7 @@ void main() {
   <p>This is a paragraph.</p>
   <img src="image.jpg" alt="Example Image" />
   <blockquote>This is a quote.</blockquote>
+  <a href="https://example.com">This is a link.</a>
   <ul>
     <li>First item</li>
     <li>Second item</li>

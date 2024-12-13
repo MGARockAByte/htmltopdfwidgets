@@ -35,7 +35,6 @@ class HTMLTags {
   static const mark = 'mark';
 
   static List<String> formattingElements = [
-    HTMLTags.anchor,
     HTMLTags.italic,
     HTMLTags.em,
     HTMLTags.bold,
@@ -50,6 +49,7 @@ class HTMLTags {
   ];
 
   static List<String> specialElements = [
+    HTMLTags.anchor,
     HTMLTags.h1,
     HTMLTags.h2,
     HTMLTags.h3,

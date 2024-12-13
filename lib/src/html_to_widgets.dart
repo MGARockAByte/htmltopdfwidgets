@@ -87,6 +87,7 @@ class WidgetsHTMLDecoder {
     for (final domNode in domNodes) {
       if (domNode is dom.Element) {
         final localName = domNode.localName;
+        print('_parseElement: localName $localName');
         if (localName == HTMLTags.br) {
           delta.add(const TextSpan(
             text: "\n",
@@ -101,6 +102,7 @@ class WidgetsHTMLDecoder {
               text: "${domNode.text.replaceAll(RegExp(r'\n+$'), '')} ",
               style: attributes.$2));
         } else if (HTMLTags.specialElements.contains(localName)) {
+          print('contains special elements $localName');
           if (delta.isNotEmpty) {
             final newlist = List<TextSpan>.from(delta);
             result.add((SizedBox(
@@ -186,6 +188,7 @@ class WidgetsHTMLDecoder {
     required String type,
   }) async {
     final localName = element.localName;
+    print('_parseSpecialElements: localName $localName');
     switch (localName) {
       /// Handle heading level 1
       case HTMLTags.h1:
@@ -241,6 +244,11 @@ class WidgetsHTMLDecoder {
       case HTMLTags.image:
         return [await _parseImageElement(element)];
 
+      /// Handle <a> element
+      case HTMLTags.anchor:
+        print('anchor founded');
+        return [await _parseAnchorElement(element, baseTextStyle)];
+
       /// Handle the line break tag
 
       /// if no special element is found it treated as simple parahgraph
@@ -260,6 +268,7 @@ class WidgetsHTMLDecoder {
     TextAlign? textAlign;
     TextStyle attributes = baseTextStyle;
     final List<TextDecoration> decoration = [];
+    print('style localName $localName');
     switch (localName) {
       /// Handle <bold> element
       case HTMLTags.bold || HTMLTags.strong:
@@ -296,19 +305,6 @@ class WidgetsHTMLDecoder {
         attributes = attributes.merge(deltaAttributes.$2);
         if (deltaAttributes.$2.decoration != null) {
           decoration.add(deltaAttributes.$2.decoration!);
-        }
-        break;
-
-      /// Handle <a> element
-      case HTMLTags.anchor:
-        final href = element.attributes['href'];
-        if (href != null) {
-          decoration.add(
-            TextDecoration.underline,
-          );
-          attributes = attributes
-              .copyWith(color: PdfColors.blue)
-              .merge(customStyles.linkStyle);
         }
         break;
 
@@ -579,6 +575,31 @@ class WidgetsHTMLDecoder {
       dom.Element element, TextStyle baseTextStyle) async {
     final delta = await _parseDeltaElement(element, baseTextStyle);
     return delta;
+  }
+
+  /// Function to parse a link element and return a widget
+  Future<Widget> _parseAnchorElement(
+      dom.Element element, TextStyle baseTextStyle) async {
+    final href = element.attributes['href'];
+    if (href != null) {
+      var decoration = baseTextStyle.decoration;
+
+      baseTextStyle = baseTextStyle
+          .copyWith(
+              color: PdfColors.blue,
+              decoration: TextDecoration.combine(
+                [
+                  if (decoration != null) decoration,
+                  TextDecoration.underline,
+                ],
+              ))
+          .merge(customStyles.linkStyle);
+    }
+    var delta = await _parseDeltaElement(element, baseTextStyle);
+    return UrlLink(
+      destination: element.attributes['href']!,
+      child: delta,
+    );
   }
 
   /// Function to parse an image element and download image as bytes  and return an Image widget
